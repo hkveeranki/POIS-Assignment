@@ -14,6 +14,12 @@ def ipow(a, b, N):
     return res % N
 
 
+def gcd(u, v):
+    while v:
+        u, v = v, u % v
+    return abs(u)
+
+
 class MillerRabin:
     """ The class that provides functionality of Miller Rabin testing"""
 
@@ -39,9 +45,11 @@ class MillerRabin:
         for i in range(r):
             pow_needed.append(int(s * power))
             power *= 2
-
+        # print('s', s, 'r', r, 'pow_needed', pow_needed)
         for i in range(t):
             a = random.randint(1, n - 1)
+            if gcd(a, n) != 1:
+                return False
             lis = []
             for j in range(r):
                 lis.append(ipow(a, pow_needed[j], n))
@@ -51,23 +59,63 @@ class MillerRabin:
             for j in range(1, r):
                 if lis[j] == n - 1:
                     fl = 0
+                    break
             if fl == 1:
-                print('Came false for ', a)
+                #       print('came false for ', a, ' because ', lis)
                 return False
         return True
 
-    def find_next_greatest_prime(self, n):
+    def find_next_greatest_prime(self, n, t):
         """
         Given a number outputs a prime greater than equal to n
         :param n:
         :return: an integer p such that p is prime and p >= n
         """
-        p = n
+        p = int(n)
+        while not self.is_prime(p, t):
+            p += 1
         return p
 
     def find_witness_liars(self):
-        """ Find Strong Witnessess and Liar"""
-        pass
+        """ Find Strong Witnessess and Liars"""
+        n = 221
+        r, u = self.__factor(n - 1)
+        pow_needed = []
+        s = u
+        power = 1
+
+        for i in range(r):
+            pow_needed.append(int(s * power))
+            power *= 2
+        liars = []
+        witnesses = []
+        print(pow_needed)
+        for a in range(2, n - 2):
+            if gcd(a, n) != 1:
+                continue
+            else:
+                lis = []
+                for j in range(r):
+                    lis.append(ipow(a, pow_needed[j], n))
+                fl = 1
+                if lis[0] == 1 or lis[0] == n - 1:
+                    fl = 0
+                for j in range(1, r):
+                    if lis[j] == n - 1:
+                        fl = 0
+                if fl == 0:
+                    liars.append(a)
+                elif fl == 1:
+                    cnt = 1
+                    if lis[0] == 1 and lis[0] != n - 1:
+                        cnt -= 1
+                    for j in range(1, r):
+                        if lis[j] != n - 1:
+                            cnt += 1
+                    if cnt == r:
+                        witnesses.append(a)
+        # print('real:O ', sorted(list(set(range(2, n - 1)) - set(witnesses + liars))))
+        return liars, witnesses
 
     def __factor(self, n):
         """
