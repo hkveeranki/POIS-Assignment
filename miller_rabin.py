@@ -1,23 +1,6 @@
+""" Contains Miller rabin primality test"""
 import random
-
-
-def ipow(a, b, N):
-    """ Returns a raised to the power b modulo N by squaring exponentiation """
-
-    res = 1
-    b = int(b)
-    while b > 0:
-        if b % 2 == 1:
-            res = (res * a) % N
-        a = (a * a) % N
-        b >>= 1
-    return res % N
-
-
-def gcd(u, v):
-    while v:
-        u, v = v, u % v
-    return abs(u)
+from util_functions import ipow, gcd
 
 
 class MillerRabin:
