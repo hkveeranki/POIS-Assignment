@@ -1,13 +1,14 @@
 """ Contains Miller rabin primality test"""
 import random
-from util_functions import ipow, gcd
+from util_functions import ipow, gcd, factorise
 
 
 class MillerRabin:
     """ The class that provides functionality of Miller Rabin testing"""
 
-    def __init__(self):
+    def __init__(self, n):
         """ Default Constructor"""
+        self.n = n
         pass
 
     def is_prime(self, n, t):
@@ -20,7 +21,7 @@ class MillerRabin:
         if n < 2 or (n > 2 and n % 2 == 0):
             return False
 
-        r, u = self.__factor(n - 1)
+        r, u = factorise(n - 1)
         pow_needed = []
         s = u
         power = 1
@@ -61,8 +62,8 @@ class MillerRabin:
 
     def find_witness_liars(self):
         """ Find Strong Witnessess and Liars"""
-        n = 221
-        r, u = self.__factor(n - 1)
+        n = self.n
+        r, u = factorise(n - 1)
         pow_needed = []
         s = u
         power = 1
@@ -72,43 +73,28 @@ class MillerRabin:
             power *= 2
         liars = []
         witnesses = []
-        print(pow_needed)
+
         for a in range(2, n - 2):
-            if gcd(a, n) != 1:
-                continue
-            else:
-                lis = []
-                for j in range(r):
-                    lis.append(ipow(a, pow_needed[j], n))
-                fl = 1
-                if lis[0] == 1 or lis[0] == n - 1:
+            lis = []
+            for j in range(r):
+                lis.append(ipow(a, pow_needed[j], n))
+            fl = 1
+            if lis[0] == 1 or lis[0] == n - 1:
+                fl = 0
+            for j in range(1, r):
+                if lis[j] == n - 1:
                     fl = 0
+            if fl == 0 and gcd(a, n) == 1:
+                liars.append(a)
+                # print("a", a, "list", lis)
+            elif fl == 1:
+                cnt = 1
+                if lis[0] == 1 or lis[0] == n - 1:
+                    cnt -= 1
                 for j in range(1, r):
-                    if lis[j] == n - 1:
-                        fl = 0
-                if fl == 0:
-                    liars.append(a)
-                elif fl == 1:
-                    cnt = 1
-                    if lis[0] == 1 and lis[0] != n - 1:
-                        cnt -= 1
-                    for j in range(1, r):
-                        if lis[j] != n - 1:
-                            cnt += 1
-                    if cnt == r:
-                        witnesses.append(a)
+                    if lis[j] != n - 1:
+                        cnt += 1
+                if cnt == r:
+                    witnesses.append(a)
         # print('real:O ', sorted(list(set(range(2, n - 1)) - set(witnesses + liars))))
         return liars, witnesses
-
-    def __factor(self, n):
-        """
-        Given an N factorise into u*2^r
-        :param n:
-        :return: return r,u
-        """
-        u = n
-        r = 0
-        while u % 2 == 0:
-            u /= 2
-            r += 1
-        return r, int(u)

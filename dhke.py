@@ -1,6 +1,7 @@
-""" Contains Diffie Heilman code"""
+""" Contains Diffie Heilman code and tests on it"""
 import random
 
+from bsgs import hack
 from util_functions import ipow
 
 
@@ -30,19 +31,30 @@ class DiffieHeilman:
         return ipow(pk, self.__a, self.p)
 
 
-def tester(A, B):
+def tester(p, g):
+    """
+    Performs Diffie Heilman key exchange and tries to hack it
+    :param p: prime for DHKE
+    :param g: Generator of the Zp*
+    """
+    p = int(p)
+    g = int(g)
+    recA = DiffieHeilman(p, g)
+    recB = DiffieHeilman(p, g)
     print("Generating keys for A")
-    pka = A.generate_key()
+    pka = recA.generate_key()
     print("public key", pka, "\nDone")
     print("Generating keys for B")
-    pkb = B.generate_key()
+    pkb = recB.generate_key()
     print("public key", pkb, "\nDone")
-    sk1 = A.caluclate_session_key(pkb)
-    sk2 = B.caluclate_session_key(pka)
-    print("Is session key same?", sk1 == sk2)
+    sk1 = recA.caluclate_session_key(pkb)
+    sk2 = recB.caluclate_session_key(pka)
+    print("Is session key same: sk1 =", sk1, "sk2 =", sk2, " so ", sk1 == sk2)  # 7a
+    prib = hack(g, pkb, p)
+    adv_key = ipow(pka, prib, p)
+    print("Trying to hack...")
+    print("hack(pkb) =", prib, "adv_key =", adv_key, "hacked =", sk1 == adv_key)
 
 
 if __name__ == "__main__":
-    A = DiffieHeilman(37, 5)
-    B = DiffieHeilman(37, 5)
-    tester(A, B)
+    tester(37, 5)
