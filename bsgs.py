@@ -5,11 +5,11 @@ from math import ceil, sqrt
 from util_functions import ipow
 
 
-def hack(g, h, p):
+def hack(p, g, h):
     """
     tries to solve discrete log problem
-    :param g: generator of the group
     :param h: value need to be hacked
+    :param g: generator of the group
     :param p: prime
     :return: x such that g^x mod p = h
     """

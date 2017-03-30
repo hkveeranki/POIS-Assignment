@@ -31,6 +31,31 @@ class DiffieHeilman:
         return ipow(pk, self.__a, self.p)
 
 
+class Eve:
+    """ Adversary Class to deal with hacking"""
+
+    def __init__(self, p, g):
+        """
+        Default constructor
+        :param p: prime used for key generation
+        :param g: generator used for key generation
+        """
+        self.p = p
+        self.g = g
+
+    def calc_key(self, m1, m2):
+        """
+        Adversary functions
+        :param m1: message sent by A
+        :param m2: message sent by B
+        :return: returns caluclated session key
+        """
+        prib = hack(self.p, self.g, m2)
+        adv_key = ipow(m1, prib, self.p)
+        print("hack(pkb) =", prib, "adv_key =", adv_key)
+        return adv_key
+
+
 def tester(p, g):
     """
     Performs Diffie Heilman key exchange and tries to hack it
@@ -41,6 +66,7 @@ def tester(p, g):
     g = int(g)
     recA = DiffieHeilman(p, g)
     recB = DiffieHeilman(p, g)
+    eve = Eve(p, g)
     print("Generating keys for A")
     pka = recA.generate_key()
     print("public key", pka, "\nDone")
@@ -50,10 +76,10 @@ def tester(p, g):
     sk1 = recA.caluclate_session_key(pkb)
     sk2 = recB.caluclate_session_key(pka)
     print("Is session key same: sk1 =", sk1, "sk2 =", sk2, " so ", sk1 == sk2)  # 7a
-    prib = hack(g, pkb, p)
-    adv_key = ipow(pka, prib, p)
+
     print("Trying to hack...")
-    print("hack(pkb) =", prib, "adv_key =", adv_key, "hacked =", sk1 == adv_key)
+
+    print("hacked =", sk1 == eve.calc_key(pka, pkb))
 
 
 if __name__ == "__main__":
