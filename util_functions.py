@@ -4,7 +4,6 @@
 def ipow(a, b, N):
     """ Returns a raised to the power b modulo N by squaring exponentiation """
     res = 1
-    b = int(b)
     while b > 0:
         if b % 2 == 1:
             res = (res * a) % N
@@ -18,3 +17,13 @@ def gcd(u, v):
     while v:
         u, v = v, u % v
     return abs(u)
+
+
+def factorise(n):
+    """ Factorises N in to s*2^r"""
+    s = n
+    r = 0
+    while s % 2 == 0:
+        r += 1
+        s /= 2
+    return long(s), int(r)

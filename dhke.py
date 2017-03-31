@@ -23,7 +23,7 @@ class DiffieHeilman:
         if self.__a is None:
             a = random.randint(0, self.p - 1)
             self.__a = a
-            print("private-key", a)
+            # print "private-key", a
         key = ipow(self.g, self.__a, self.p)
         return key
 
@@ -52,7 +52,7 @@ class Eve:
         """
         prib = hack(self.p, self.g, m2)
         adv_key = ipow(m1, prib, self.p)
-        print("hack(pkb) =", prib, "adv_key =", adv_key)
+        print "hack(pkb) =", prib, "adv_key =", adv_key
         return adv_key
 
 
@@ -62,24 +62,24 @@ def tester(p, g):
     :param p: prime for DHKE
     :param g: Generator of the Zp*
     """
-    p = int(p)
-    g = int(g)
+    p = long(p)
+    g = long(g)
     recA = DiffieHeilman(p, g)
     recB = DiffieHeilman(p, g)
     eve = Eve(p, g)
-    print("Generating keys for A")
+    print "Generating keys for A"
     pka = recA.generate_key()
-    print("public key", pka, "\nDone")
-    print("Generating keys for B")
+    print "public key", pka, "\nDone"
+    print "Generating keys for B"
     pkb = recB.generate_key()
-    print("public key", pkb, "\nDone")
+    print "public key", pkb, "\nDone"
     sk1 = recA.caluclate_session_key(pkb)
     sk2 = recB.caluclate_session_key(pka)
-    print("Is session key same: sk1 =", sk1, "sk2 =", sk2, " so ", sk1 == sk2)  # 7a
+    print "Is session key same: sk1 =", sk1, "sk2 =", sk2, " so ", sk1 == sk2  # 7b
 
-    print("Trying to hack...")
+    print "Trying to hack..."
 
-    print("hacked =", sk1 == eve.calc_key(pka, pkb))
+    print "hacked =", sk1 == eve.calc_key(pka, pkb)
 
 
 if __name__ == "__main__":

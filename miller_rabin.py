@@ -20,33 +20,9 @@ class MillerRabin:
         """
         if n < 2 or (n > 2 and n % 2 == 0):
             return False
-
-        r, u = factorise(n - 1)
-        pow_needed = []
-        s = u
-        power = 1
-
-        for i in range(r):
-            pow_needed.append(int(s * power))
-            power *= 2
-        # print('s', s, 'r', r, 'pow_needed', pow_needed)
         for i in range(t):
-            a = random.randint(1, n - 1)
-            if gcd(a, n) != 1:
-                return False
-            lis = []
-            for j in range(r):
-                lis.append(ipow(a, pow_needed[j], n))
-            fl = 1
-            if lis[0] == 1 or lis[0] == n - 1:
-                fl = 0
-            for j in range(1, r):
-                if lis[j] == n - 1:
-                    fl = 0
-                    break
-            if fl == 1:
-                #       print('came false for ', a, ' because ', lis)
-                return False
+            a = random.randint(2, n - 2)
+            if is_witness(a, n): return False
         return True
 
     def find_next_greatest_prime(self, n, t):
@@ -55,10 +31,11 @@ class MillerRabin:
         :param n:
         :return: an integer p such that p is prime and p >= n
         """
-        p = int(n)
-        while not self.is_prime(p, t):
-            p += 1
-        return p
+        if n % 2 == 0:
+            n += 1
+        while not self.is_prime(n, t):
+            n += 2
+        return n
 
     def find_witness_liars(self):
         """ Find Strong Witnessess and Liars"""
@@ -69,7 +46,7 @@ class MillerRabin:
         power = 1
 
         for i in range(r):
-            pow_needed.append(int(s * power))
+            pow_needed.append(long(s * power))
             power *= 2
         liars = []
         witnesses = []
@@ -98,3 +75,17 @@ class MillerRabin:
                     witnesses.append(a)
         # print('real:O ', sorted(list(set(range(2, n - 1)) - set(witnesses + liars))))
         return liars, witnesses
+
+
+def is_witness(a, n):
+    q = n - 1
+    k = 0
+    while q % 2 == 0:
+        q /= 2
+        k += 1
+    b = ipow(long(a), long(q), n)
+    if b == 1: return False
+    for i in range(k):
+        if b == n - 1: return False
+        b = (b * b) % n
+    return True

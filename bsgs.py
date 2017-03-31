@@ -16,7 +16,7 @@ def hack(p, g, h):
     if h > p - 1 or h < 1:
         raise ValueError('h doesnt belong to the group')
 
-    m = ceil(sqrt(p))
+    m = long(ceil(sqrt(p)))
     vals = {}
     s = 1
     for i in range(m):
@@ -40,4 +40,4 @@ if __name__ == "__main__":
     p = 37
     g = 5
     x = random.randint(1, 2 ** 40) % p - 1
-    print("x =", x, "hack =", hack(g, ipow(g, x, p), p))
+    print "x =", x, "hack =", hack(g, ipow(g, x, p), p)

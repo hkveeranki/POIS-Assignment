@@ -1,5 +1,10 @@
+import random
+
 import miller_rabin
 
 x = miller_rabin.MillerRabin(221)
-print(x.is_prime(252601, 5))
-print(x.find_witness_liars())
+inp = random.randint(2, 10 ** 100)
+sinp = str(inp)
+print "N =", sinp
+print "Next greatest prime:", x.find_next_greatest_prime(inp, len(sinp))
+print "Liars and witesses", x.find_witness_liars()
