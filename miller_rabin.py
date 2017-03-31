@@ -1,6 +1,6 @@
 """ Contains Miller rabin primality test"""
 import random
-from util_functions import ipow, gcd, factorise
+from util_functions import ipow
 
 
 class MillerRabin:
@@ -38,44 +38,19 @@ class MillerRabin:
         return n
 
     def find_witness_liars(self):
-        """ Find Strong Witnessess and Liars"""
+        """ Find Strong Witnessess and Liars of the given n"""
         n = self.n
-        r, u = factorise(n - 1)
-        pow_needed = []
-        s = u
-        power = 1
-
-        for i in range(r):
-            pow_needed.append(long(s * power))
-            power *= 2
         liars = []
         witnesses = []
-
         for a in range(2, n - 2):
-            lis = []
-            for j in range(r):
-                lis.append(ipow(a, pow_needed[j], n))
-            fl = 1
-            if lis[0] == 1 or lis[0] == n - 1:
-                fl = 0
-            for j in range(1, r):
-                if lis[j] == n - 1:
-                    fl = 0
-            if fl == 0 and gcd(a, n) == 1:
+            if is_liar(a, n):
                 liars.append(a)
-                # print("a", a, "list", lis)
-            elif fl == 1:
-                cnt = 1
-                if lis[0] == 1 or lis[0] == n - 1:
-                    cnt -= 1
-                for j in range(1, r):
-                    if lis[j] != n - 1:
-                        cnt += 1
-                if cnt == r:
-                    witnesses.append(a)
-        # print('real:O ', sorted(list(set(range(2, n - 1)) - set(witnesses + liars))))
+            elif is_witness(a, n):
+                witnesses.append(a)
         return liars, witnesses
 
+
+# Auxillary Functions to Assist
 
 def is_witness(a, n):
     q = n - 1
@@ -87,5 +62,18 @@ def is_witness(a, n):
     if b == 1: return False
     for i in range(k):
         if b == n - 1: return False
+        b = (b * b) % n
+    return True
+
+
+def is_liar(a, n):
+    q = n - 1
+    k = 0
+    while q % 2 == 0:
+        q /= 2
+        k += 1
+    b = ipow(long(a), long(q), n)
+    for i in range(k):
+        if i != 0 and b != n - 1: return False
         b = (b * b) % n
     return True
