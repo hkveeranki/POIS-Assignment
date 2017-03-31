@@ -30,57 +30,63 @@ class DiffieHeilman:
     def caluclate_session_key(self, pk):
         return ipow(pk, self.__a, self.p)
 
+    def enc_message(self, sk, m):
+        return m ^ sk
 
-class Eve:
-    """ Adversary Class to deal with hacking"""
-
-    def __init__(self, p, g):
-        """
-        Default constructor
-        :param p: prime used for key generation
-        :param g: generator used for key generation
-        """
-        self.p = p
-        self.g = g
-
-    def calc_key(self, m1, m2):
-        """
-        Adversary functions
-        :param m1: message sent by A
-        :param m2: message sent by B
-        :return: returns caluclated session key
-        """
-        prib = hack(self.p, self.g, m2)
-        adv_key = ipow(m1, prib, self.p)
-        print "hack(pkb) =", prib, "adv_key =", adv_key
-        return adv_key
+    def dec_message(self, sk, c):
+        return sk ^ c
 
 
-def tester(p, g):
+def correctness_tester(p, g):
     """
     Performs Diffie Heilman key exchange and tries to hack it
     :param p: prime for DHKE
     :param g: Generator of the Zp*
     """
+    print "Verifying the correctness"
     p = long(p)
     g = long(g)
-    recA = DiffieHeilman(p, g)
-    recB = DiffieHeilman(p, g)
-    eve = Eve(p, g)
+    alice = DiffieHeilman(p, g)
+    bob = DiffieHeilman(p, g)
     print "Generating keys for A"
-    pka = recA.generate_key()
+    pka = alice.generate_key()
     print "public key", pka, "\nDone"
     print "Generating keys for B"
-    pkb = recB.generate_key()
+    pkb = bob.generate_key()
     print "public key", pkb, "\nDone"
-    sk1 = recA.caluclate_session_key(pkb)
-    sk2 = recB.caluclate_session_key(pka)
+    sk1 = alice.caluclate_session_key(pkb)
+    sk2 = bob.caluclate_session_key(pka)
     print "Is session key same: sk1 =", sk1, "sk2 =", sk2, " so ", sk1 == sk2  # 7b
+    print "Done testing..."
 
-    print "Trying to hack..."
 
-    print "hacked =", sk1 == eve.calc_key(pka, pkb)
+def man_in_the_middle(p, g):
+    """ Trying to perform man in the middle attack"""
+    print "Performing Man in the middle attack"
+    p = long(p)
+    g = long(g)
+    print "Caluclating the keys..."
+    alice = DiffieHeilman(p, g)
+    bob = DiffieHeilman(p, g)
+    eve = DiffieHeilman(p, g)
+    pka = alice.generate_key()
+    pkb = bob.generate_key()
+    pke = eve.generate_key()
+    print "Done....\n Generating Session keys"
+    ska = alice.caluclate_session_key(pke)
+    skb = bob.caluclate_session_key(pke)
+    ske1 = eve.caluclate_session_key(pka)
+    ske2 = eve.caluclate_session_key(pkb)
+    print "Session keys are..."
+    print "Alice :", ska
+    print "Bob :", skb
+    print "Eve :", ske1, ske2
+
+    print "Can Eve read messages sent by Alice? :", ske1 == ska
+    print "Can Eve read messages sent by Bob? :", ske2 == skb
+    print "Can Bob read messages sent by Alice? :", skb == ska
 
 
 if __name__ == "__main__":
-    tester(37, 5)
+    correctness_tester(37, 5)
+    man_in_the_middle(37, 5)
