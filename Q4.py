@@ -6,13 +6,13 @@ from random import shuffle, randint
 import sys
 
 
-def commit(msg):
+def commit(msg, key):
     """ returns hash of the msg"""
-    return hashlib.sha256(str(msg)).hexdigest()
+    return hashlib.sha256(str(msg + key)).hexdigest()
 
 
-def verify(committed, msg):
-    return hashlib.sha256(msg).hexdigest() == committed
+def verify(committed, msg, key):
+    return hashlib.sha256(msg + key).hexdigest() == committed
 
 
 def gen_str(length):
@@ -34,18 +34,19 @@ def gen_key(key_leng):
     return key
 
 
-def a_4(str_len):
+def a_4(str_len, key_len):
     m = gen_str(str_len)
+    key = gen_key(key_len)
     print "Message", m
-    com = commit(m)
+    com = commit(key, m)
     print "Commit ", com
-    print verify(com, m)
-    dum = list(com)
-    while dum == list(com):
+    print verify(com, key, m)
+    dum = list(m)
+    while dum == list(m):
         shuffle(dum)
     dum = ''.join(dum)
     print "dum", dum
-    print verify(dum, m)
+    print verify(com, key, dum)
 
 
 def b_4(str_len, key_len):
@@ -53,22 +54,17 @@ def b_4(str_len, key_len):
     and then make a tuple with this hash and message
     and generate the hash of it 
     """
-    key = gen_key(key_len)
-    key_hash = commit(key)
-    m = gen_str(str_len)
-    eve_key_hash = commit("1" * key_len)
-    com = commit(key_hash + m)
-    print "Same key hash", verify(com, key_hash + m)
-    print "Other Key hash", verify(com, eve_key_hash + m)
+    pass
 
 
 if __name__ == "__main__":
     part = sys.argv[1]
     string_length = randint(32, 10 ** 2)
+    key_length = int(pow(2, randint(6, 10)))
     if part == 'a':
-        a_4(string_length)
+        a_4(string_length, key_length)
     elif part == 'b':
-        key_length = int(pow(2, randint(6, 10)))
+
         b_4(string_length, key_length)
     else:
         sys.stderr.write('only accepted inputs are a and b')

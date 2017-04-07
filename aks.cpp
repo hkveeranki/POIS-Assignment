@@ -67,7 +67,7 @@ void mul(poly& a,poly b,ull n,ull r){
 			for(j = 0; j < b.F.size(); j++)
 			{
 				if(b.F[j]!=0){
-					nc = a.F[i]*b.F[j];
+					nc = (a.F[i]*b.F[j])%n;
 					imr = (i+j);
 					if(imr>=r)
 						imr%=r;
@@ -161,6 +161,6 @@ ull isAKS(ull n){
 }
 int main(){
 
-	ull n = 1e9+7;
+	ull n = 129461;
 	cout << "isprime " << isAKS(n) << endl;
 }

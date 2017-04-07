@@ -1,4 +1,4 @@
 .PHONY: 
 clean:
-	rm -f  *.pyc
+	rm -f  *.pyc a.out
 
