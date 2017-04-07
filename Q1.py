@@ -12,4 +12,4 @@ def hack_hash(message):
 
 
 if __name__ == "__main__":
-    hack_hash("hello")
+    hack_hash("Hello this is me")

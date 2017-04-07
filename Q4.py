@@ -57,13 +57,13 @@ def b_4(str_len, key_len):
     key_hash = commit(key)
     m = gen_str(str_len)
     eve_key_hash = commit("1" * key_len)
-    com = commit((key_hash, m))
-    print "Same key hash", verify((key_hash, m), com)
-    print "Other Key hash", verify((eve_key_hash, m), com)
+    com = commit(key_hash + m)
+    print "Same key hash", verify(com, key_hash + m)
+    print "Other Key hash", verify(com, eve_key_hash + m)
 
 
 if __name__ == "__main__":
-    part = raw_input("which part a or b?: ").lower()
+    part = sys.argv[1]
     string_length = randint(32, 10 ** 2)
     if part == 'a':
         a_4(string_length)
