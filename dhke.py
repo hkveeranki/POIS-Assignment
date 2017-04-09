@@ -2,6 +2,7 @@
 import random
 
 from bsgs import hack
+from miller_rabin import MillerRabin
 from util_functions import ipow
 
 
@@ -43,7 +44,7 @@ def correctness_tester(p, g):
     :param p: prime for DHKE
     :param g: Generator of the Zp*
     """
-    print "Verifying the correctness"
+    print "--- Verifying the correctness ---"
     p = long(p)
     g = long(g)
     alice = DiffieHeilman(p, g)
@@ -57,12 +58,12 @@ def correctness_tester(p, g):
     sk1 = alice.caluclate_session_key(pkb)
     sk2 = bob.caluclate_session_key(pka)
     print "Is session key same: sk1 =", sk1, "sk2 =", sk2, " so ", sk1 == sk2  # 7b
-    print "Done testing..."
+    print "--- Done testing ---"
 
 
 def man_in_the_middle(p, g):
     """ Trying to perform man in the middle attack"""
-    print "Performing Man in the middle attack"
+    print "--- Performing Man in the middle attack ---"
     p = long(p)
     g = long(g)
     print "Caluclating the keys..."
@@ -72,7 +73,7 @@ def man_in_the_middle(p, g):
     pka = alice.generate_key()
     pkb = bob.generate_key()
     pke = eve.generate_key()
-    print "Done....\n Generating Session keys"
+    print "Done....\nGenerating Session keys"
     ska = alice.caluclate_session_key(pke)
     skb = bob.caluclate_session_key(pke)
     ske1 = eve.caluclate_session_key(pka)
@@ -85,8 +86,41 @@ def man_in_the_middle(p, g):
     print "Can Eve read messages sent by Alice? :", ske1 == ska
     print "Can Eve read messages sent by Bob? :", ske2 == skb
     print "Can Bob read messages sent by Alice? :", skb == ska
+    print "--- Done ---"
+
+
+valid_gens = [2, 3, 5, 6, 7, 11]
+
+
+def check_gen(n, g):
+    val = g
+    ind = 1
+    thresh = pow(10, len(str(n)) - 1)
+    while ind < n:
+        ind += 1
+        val = (val * g) % n
+        if val == 1 and ind != n - 1:
+            return False
+    return True
+
+
+def generate_prime():
+    """ Generates primes from 10**5 to 10**7 and returns the array """
+    tester = MillerRabin(221)
+    while True:
+        p = random.randint(10 ** 6, 10 ** 7)
+        if tester.is_prime(p, 10):
+            return p
 
 
 if __name__ == "__main__":
-    correctness_tester(37, 5)
-    man_in_the_middle(37, 5)
+    p = generate_prime()
+    print "Prime is", p
+    g = 2
+    for i in range(len(valid_gens)):
+        if check_gen(p, valid_gens[i]):
+            g = valid_gens[i]
+            break
+    print "g is", g
+    correctness_tester(p, g)
+    man_in_the_middle(p, g)
