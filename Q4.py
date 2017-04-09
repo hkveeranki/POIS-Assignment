@@ -1,11 +1,12 @@
 """ Code for Question 4a Commitment API"""
+
 import hashlib
-from random import shuffle, randint, sample
+from random import shuffle, randint
 
 import sys
 
-from util_functions import generate_primes, \
-    modinv, ipow, gen_key, gen_str
+from miller_rabin import MillerRabin
+from util_functions import modinv, gen_key, gen_str, ipow
 
 
 def Hash(inp):
@@ -37,11 +38,20 @@ def a_4(str_len):
     print verify(com, key, dum)
 
 
+def generate_prime():
+    """ Generates primes from 10**5 to 10**7 and returns the array """
+    tester = MillerRabin(221)
+    while True:
+        p = randint(10 ** 7, 10 ** 9)
+        if tester.is_prime(p, 10):
+            return p
+
+
 def generate_rsa_keypair():
-    global primes
-    len_p = len(primes)
-    pi, qi = sample(range(1, len_p + 1), 2)
-    p, q = primes[pi], primes[qi]
+    p = generate_prime()
+    q = p
+    while q == p:
+        q = generate_prime()
     gen_n = p * q
     phin = (p - 1) * (q - 1)
     e = 65537
@@ -92,10 +102,6 @@ if __name__ == "__main__":
     if part == 'a':
         a_4(string_length)
     elif part == 'b':
-        print("Generating Primes...")
-        global primes
-        primes = generate_primes()
-        print("Done")
         b_4(string_length)
     else:
         sys.stderr.write('only accepted inputs are a and b')

@@ -2,7 +2,6 @@
 import string
 from random import randint
 
-
 def ipow(a, b, N):
     """ Returns a raised to the power b modulo N by squaring exponentiation """
     res = 1
@@ -36,24 +35,6 @@ def modinv(a, m):
         raise Exception('modular inverse does not exist')
     else:
         return x % m
-
-
-def generate_primes():
-    """ Generates primes from 10**5 to 10**7 and returns the array """
-    N = 10 ** 7 + 1
-    isP = [True for i in range(N)]
-    isP[0] = isP[1] = False
-    primes = []
-    for i in range(2, N):
-        if isP[i]:
-            for j in range(2 * i, N, i):
-                isP[j] = False
-
-    for j in range(10 ** 5, N):
-        if isP[j]:
-            primes.append(j)
-    return primes
-
 
 def gen_str(length):
     """ creates a random string of length len"""

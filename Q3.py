@@ -3,7 +3,7 @@ import random
 import miller_rabin
 
 x = miller_rabin.MillerRabin(221)
-inp = random.randint(2, 10**7)
+inp = random.randint(10**6, 10**8)
 sinp = str(inp)
 print "N =", sinp
 print "Next greatest prime:", x.find_next_greatest_prime(inp, len(sinp))
