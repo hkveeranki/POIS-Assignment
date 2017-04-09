@@ -1,22 +1,22 @@
 """ Contains Diffie Heilman code and tests on it"""
 import random
-
-from bsgs import hack
-from miller_rabin import MillerRabin
+from Q3 import MillerRabin
 from util_functions import ipow
+
+global p, g
 
 
 class DiffieHeilman:
     """ Class to deal with DiffieHeilman """
 
-    def __init__(self, p, g):
+    def __init__(self, prime, gen):
         """
         Default Constructor
-        :param p: prime used for cyclic group
-        :param g: genertor of the group
+        :param prime: prime used for cyclic group
+        :param gen: genertor of the group
         """
-        self.p = p
-        self.g = g
+        self.p = prime
+        self.g = gen
         self.__a = None
 
     def generate_key(self):
@@ -31,22 +31,12 @@ class DiffieHeilman:
     def caluclate_session_key(self, pk):
         return ipow(pk, self.__a, self.p)
 
-    def enc_message(self, sk, m):
-        return m ^ sk
 
-    def dec_message(self, sk, c):
-        return sk ^ c
-
-
-def correctness_tester(p, g):
+def correctness_tester():
     """
     Performs Diffie Heilman key exchange and tries to hack it
-    :param p: prime for DHKE
-    :param g: Generator of the Zp*
     """
     print "--- Verifying the correctness ---"
-    p = long(p)
-    g = long(g)
     alice = DiffieHeilman(p, g)
     bob = DiffieHeilman(p, g)
     print "Generating keys for A"
@@ -61,11 +51,9 @@ def correctness_tester(p, g):
     print "--- Done testing ---"
 
 
-def man_in_the_middle(p, g):
+def man_in_the_middle():
     """ Trying to perform man in the middle attack"""
     print "--- Performing Man in the middle attack ---"
-    p = long(p)
-    g = long(g)
     print "Caluclating the keys..."
     alice = DiffieHeilman(p, g)
     bob = DiffieHeilman(p, g)
@@ -92,13 +80,12 @@ def man_in_the_middle(p, g):
 valid_gens = [2, 3, 5, 6, 7, 11]
 
 
-def check_gen(n, g):
-    val = g
+def check_gen(n, gen):
+    val = gen
     ind = 1
-    thresh = pow(10, len(str(n)) - 1)
     while ind < n:
         ind += 1
-        val = (val * g) % n
+        val = (val * gen) % n
         if val == 1 and ind != n - 1:
             return False
     return True
@@ -108,12 +95,13 @@ def generate_prime():
     """ Generates primes from 10**5 to 10**7 and returns the array """
     tester = MillerRabin(221)
     while True:
-        p = random.randint(10 ** 6, 10 ** 7)
-        if tester.is_prime(p, 10):
-            return p
+        tmp_p = random.randint(10 ** 6, 10 ** 7)
+        if tester.is_prime(tmp_p, 10):
+            return tmp_p
 
 
 if __name__ == "__main__":
+    global p, g
     p = generate_prime()
     print "Prime is", p
     g = 2
@@ -122,5 +110,5 @@ if __name__ == "__main__":
             g = valid_gens[i]
             break
     print "g is", g
-    correctness_tester(p, g)
-    man_in_the_middle(p, g)
+    correctness_tester()
+    man_in_the_middle()

@@ -2,7 +2,7 @@
 import random
 from math import ceil, sqrt
 
-from miller_rabin import MillerRabin
+from Q3 import MillerRabin
 from util_functions import ipow
 
 

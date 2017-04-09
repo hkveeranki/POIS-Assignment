@@ -5,7 +5,7 @@ from random import shuffle, randint
 
 import sys
 
-from miller_rabin import MillerRabin
+from Q3 import MillerRabin
 from util_functions import modinv, gen_key, gen_str, ipow
 
 
@@ -97,7 +97,11 @@ def b_4(str_len):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        sys.stderr.write('specify a or b part to run\nUsage: python Q4.py a/b\n')
+        sys.exit(-1)
     part = sys.argv[1]
+
     string_length = randint(32, 10 ** 2)
     if part == 'a':
         a_4(string_length)
